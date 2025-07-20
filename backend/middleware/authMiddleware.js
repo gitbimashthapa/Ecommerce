@@ -10,12 +10,14 @@ export const Role={
 //
 export const isAuthenticated = async (req, res, next) => {
     const token = req.headers.authorization;
+    console.log("Received token:", token ? "Token present" : "No token");
     if (!token) {
         return res.status(401).json({ message: " Token not found" });
     }
 //call back function
     jwt.verify(token, process.env.JWT_SECRETE, async (err, decoded) => {
         if (err) {
+            console.error("JWT verification error:", err.message);
             return res.status(403).json({ message: " Invalid token" });
         }
         else {
