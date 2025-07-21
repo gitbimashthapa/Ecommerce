@@ -1,10 +1,14 @@
 import Category from "../models/categoryModel.js";
 
 
-//creat product api
+//creat category api
 export const createCategory = async (req, res) => {
-    const userId=req.user.id;
-    const { categoryName} = req.body;
+    const userId = req.user.id;
+    const { categoryName } = req.body;
+
+    if (!categoryName) {
+        return res.status(400).json({ message: "Category name is required" });
+    }
 
     const category = await Category.create({
         categoryName,
@@ -17,39 +21,41 @@ export const createCategory = async (req, res) => {
 export const getAllCategory = async (req, res) => {
     const category = await Category.find();
     res.status(200).json({ message: "Category fetch successfully", data: category })
-
 }
 
 
-//single product
+//single category
 export const fetchSingleCategory = async (req, res) => {
     const { id } = req.params;
     const category = await Category.findById(id);
     if (!category) {
         return res.status(404).json({ message: "Category not found" })
     }
-    res.status(200).json({ message: " Single product fetch successfull", data: category })
+    res.status(200).json({ message: "Single category fetch successfully", data: category })
 }
 
-//update product
+//update category
 export const updateCategory = async (req, res) => {
     const { id } = req.params;
     const { categoryName } = req.body;
 
-    const updateCategory = await Category.findByIdAndUpdate(id, { categoryName }, { new: true })
-    if (!updateCategory) {
+    if (!categoryName) {
+        return res.status(400).json({ message: "Category name is required" });
+    }
+
+    const updatedCategory = await Category.findByIdAndUpdate(id, { categoryName }, { new: true })
+    if (!updatedCategory) {
         return res.status(404).json({ message: "Category not found" })
     }
-    res.status(200).json({ message: "Category update successfully", data: updateCategory })
+    res.status(200).json({ message: "Category updated successfully", data: updatedCategory })
 }
 
-//delete product
-export const deleteCategory= async(req, res)=>{
-    const{id}=req.params;
-    const category= await Category.findByIdAndDelete(id);
-    if(!category){
+//delete category
+export const deleteCategory = async (req, res) => {
+    const { id } = req.params;
+    const category = await Category.findByIdAndDelete(id);
+    if (!category) {
         return res.status(404).json({ message: "Category not found" })
     }
-    res.status(200).json({ message: "Category deleted successfully"})
-
+    res.status(200).json({ message: "Category deleted successfully" })
 }
