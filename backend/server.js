@@ -3,6 +3,7 @@ import connectDB from "./config/mongodb.js"; //import from the mongodb.js
 import userRoutes from "./routes/userRoutes.js"
 import productRoutes from "./routes/productRoutes.js"
 import categoryRoutes from "./routes/categoryRoutes.js"
+import cartRoutes from "./routes/cartRoutes.js"
 import cors from "cors"
 
 import dotenv from "dotenv"
@@ -25,6 +26,7 @@ connectDB()//call the function from the mongodb.js
 app.use("/api", userRoutes)
 app.use("/api/product", productRoutes)
 app.use("/api/category", categoryRoutes)
+app.use("/api/cart", cartRoutes)
 
 
 app.listen(PORT, ()=>{
