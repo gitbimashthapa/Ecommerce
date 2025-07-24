@@ -4,6 +4,7 @@ import userRoutes from "./routes/userRoutes.js"
 import productRoutes from "./routes/productRoutes.js"
 import categoryRoutes from "./routes/categoryRoutes.js"
 import cartRoutes from "./routes/cartRoutes.js"
+import orderRoutes from "./routes/orderRoutes.js"
 import cors from "cors"
 
 import dotenv from "dotenv"
@@ -27,6 +28,7 @@ app.use("/api", userRoutes)
 app.use("/api/product", productRoutes)
 app.use("/api/category", categoryRoutes)
 app.use("/api/cart", cartRoutes)
+app.use("/api/order", orderRoutes)
 
 
 app.listen(PORT, ()=>{
