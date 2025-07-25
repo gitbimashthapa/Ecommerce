@@ -143,3 +143,156 @@ export const deleteUser = async (req, res) => {
     }
 }
 
+// Add product to favourites
+export const addToFavourites = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const { productId } = req.params;
+
+        if (!productId) {
+            return res.status(400).json({ message: "Product ID is required" });
+        }
+
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        // Check if product is already in favourites
+        if (user.favourites.includes(productId)) {
+            return res.status(400).json({ message: "Product already in favourites" });
+        }
+
+        user.favourites.push(productId);
+        await user.save();
+
+        res.status(200).json({ message: "Product added to favourites successfully" });
+    } catch (err) {
+        res.status(500).json({ error: "Internal server error" });
+    }
+};
+
+// Remove product from favourites
+export const removeFromFavourites = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const { productId } = req.params;
+
+        if (!productId) {
+            return res.status(400).json({ message: "Product ID is required" });
+        }
+
+        const user = await User.findByIdAndUpdate(
+            userId,
+            { $pull: { favourites: productId } },
+            { new: true }
+        );
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        res.status(200).json({ message: "Product removed from favourites successfully" });
+    } catch (err) {
+        res.status(500).json({ error: "Internal server error" });
+    }
+};
+
+// Get user's favourite products
+export const getFavourites = async (req, res) => {
+    try {
+        const userId = req.user.id;
+
+        const user = await User.findById(userId)
+            .populate('favourites', 'productName productPrice productImageUrl productDescription category')
+            .select('favourites');
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        if (!user.favourites || user.favourites.length === 0) {
+            return res.status(200).json({ 
+                message: "No favourite products found", 
+                data: [] 
+            });
+        }
+
+        res.status(200).json({ 
+            message: "Favourite products fetched successfully", 
+            data: user.favourites,
+            totalFavourites: user.favourites.length
+        });
+    } catch (err) {
+        res.status(500).json({ error: "Internal server error" });
+    }
+};
+
+// Toggle favourite (add if not exists, remove if exists)
+export const toggleFavourite = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const { productId } = req.params;
+
+        if (!productId) {
+            return res.status(400).json({ message: "Product ID is required" });
+        }
+
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        const isAlreadyFavourite = user.favourites.includes(productId);
+
+        if (isAlreadyFavourite) {
+            // Remove from favourites
+            user.favourites = user.favourites.filter(id => id.toString() !== productId);
+            await user.save();
+            res.status(200).json({ 
+                message: "Product removed from favourites", 
+                action: "removed",
+                isFavourite: false
+            });
+        } else {
+            // Add to favourites
+            user.favourites.push(productId);
+            await user.save();
+            res.status(200).json({ 
+                message: "Product added to favourites", 
+                action: "added",
+                isFavourite: true
+            });
+        }
+    } catch (err) {
+        res.status(500).json({ error: "Internal server error" });
+    }
+};
+
+// Check if product is in user's favourites
+export const checkFavourite = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const { productId } = req.params;
+
+        if (!productId) {
+            return res.status(400).json({ message: "Product ID is required" });
+        }
+
+        const user = await User.findById(userId).select('favourites');
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        const isFavourite = user.favourites.includes(productId);
+
+        res.status(200).json({ 
+            message: "Favourite status checked successfully",
+            isFavourite: isFavourite,
+            productId: productId
+        });
+    } catch (err) {
+        res.status(500).json({ error: "Internal server error" });
+    }
+};
+

@@ -124,7 +124,7 @@ export const updateOrderStatus = async (req, res) => {
     });
 };
 
-// Delete/Cancel order
+// Delete order
 export const deleteOrder = async (req, res) => {
     const { id } = req.params;
     const userId = req.user.id;
@@ -132,7 +132,7 @@ export const deleteOrder = async (req, res) => {
 
     let order;
     
-    // Admin can delete any order, users can only delete their own pending orders
+    // Admin can delete any order, users can only delete their orders
     if (userRole === 'admin') {
         order = await Order.findByIdAndDelete(id);
     } else {
@@ -148,7 +148,7 @@ export const deleteOrder = async (req, res) => {
         return res.status(404).json({ 
             message: userRole === 'admin' 
                 ? "Order not found" 
-                : "Order not found or cannot be cancelled (only pending orders can be cancelled)" 
+                : "Order not found or cannot be cancelled as pending" 
         });
     }
 

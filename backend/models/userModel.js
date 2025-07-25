@@ -4,7 +4,8 @@ const userSchema= new mongoose.Schema({
     username:{type:String, required:true},
     email:{type:String, required:true, unique:true},
     password:{type:String, required:true},
-    role:{type:String, enum:["user", "admin", "superAdmin"], default:"user"}
+    role:{type:String, enum:["user", "admin", "superAdmin"], default:"user"},
+    favourites:[{type:mongoose.Schema.Types.ObjectId, ref:'Product'}]
 })
 
 const User=mongoose.model("User", userSchema);
