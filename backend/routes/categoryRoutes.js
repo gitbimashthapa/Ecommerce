@@ -1,5 +1,5 @@
 import { Router } from "express";
-import errorHandle from "../services/erroHandler.js";
+import errorHandle from "../services/errorHandler.js";
 import { isAuthenticated, restrictTo, Role } from "../middleware/authMiddleware.js";
 import { createCategory, deleteCategory, fetchSingleCategory, getAllCategory, updateCategory } from "../controllers/categoryController.js";
 

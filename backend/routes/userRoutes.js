@@ -1,6 +1,7 @@
 import { Router } from "express";
-import {  deleteUser, getAllUsers, singleUser, updateUser, userLogin, userProfile, userRegistration, addToFavourites, removeFromFavourites, getFavourites, toggleFavourite, checkFavourite } from "../controllers/userController.js";
+import {  deleteUser, getAllUsers, singleUser, updateUser, userLogin, userProfile, userRegistration, addToFavourites, removeFromFavourites, getFavourites } from "../controllers/userController.js";
 import { isAuthenticated, restrictTo, Role } from "../middleware/authMiddleware.js";
+import errorHandle from "../services/errorHandler.js";
 
 
 const router=Router();
@@ -20,10 +21,8 @@ router.route("/updateUser/:id").patch(isAuthenticated , updateUser);
 router.route("/delete/:id").delete(isAuthenticated, restrictTo(Role.Admin), deleteUser);
 
 // Favourite routes
-router.route("/favourite/add/:productId").post(isAuthenticated, addToFavourites);
-router.route("/favourite/remove/:productId").delete(isAuthenticated, removeFromFavourites);
-router.route("/favourite/check/:productId").get(isAuthenticated, checkFavourite);
-router.route("/favourites").get(isAuthenticated, getFavourites);
-router.route("/favourite/toggle/:productId").patch(isAuthenticated, toggleFavourite);
+router.route("/favourite/add/:productId").post(isAuthenticated, errorHandle(addToFavourites));
+router.route("/favourite/remove/:productId").delete(isAuthenticated, errorHandle(removeFromFavourites));
+router.route("/favourites").get(isAuthenticated, errorHandle(getFavourites));
 
 export default router
