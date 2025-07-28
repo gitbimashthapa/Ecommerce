@@ -1,26 +1,20 @@
 import { Router } from "express";
 import errorHandle from "../services/errorHandler.js";
-import { 
-    createOrder, 
-    getMyOrders, 
-    getAllOrders, 
-    getSingleOrder, 
-    updateOrderStatus, 
-    deleteOrder 
-} from "../controllers/orderController.js";
+import { cancleOrder, createOrder, deleteOrder, getAllOrders, getMyOrder, getSingleOrder, updateOrderStatus } from "../controllers/orderController.js";
 import { isAuthenticated, restrictTo, Role } from "../middleware/authMiddleware.js";
 
-const router = Router();
+const router=Router();
+router.route("/").post(isAuthenticated, restrictTo(Role.User),createOrder)
+.get(isAuthenticated,restrictTo(Role.Admin), errorHandle(getAllOrders))
 
-// User routes (authenticated users)
-router.route("/create").post(isAuthenticated, errorHandle(createOrder));
-router.route("/my-orders").get(isAuthenticated, errorHandle(getMyOrders));
-router.route("/single/:id").get(isAuthenticated, errorHandle(getSingleOrder));
-router.route("/cancel/:id").delete(isAuthenticated, errorHandle(deleteOrder));
+router.route("/myOrders").get(isAuthenticated,restrictTo(Role.User), errorHandle(getMyOrder))
 
-// Admin only routes
-router.route("/all").get(isAuthenticated, restrictTo(Role.Admin), errorHandle(getAllOrders));
-router.route("/update-status/:id").patch(isAuthenticated, restrictTo(Role.Admin), errorHandle(updateOrderStatus));
-router.route("/delete/:id").delete(isAuthenticated, restrictTo(Role.Admin), errorHandle(deleteOrder));
+router.route("/:id").get( isAuthenticated, errorHandle(getSingleOrder))
+.post(isAuthenticated,restrictTo(Role.User) ,errorHandle(cancleOrder))
+.patch(isAuthenticated, restrictTo(Role.Admin), updateOrderStatus)
 
-export default router;
+.delete(isAuthenticated,restrictTo(Role.Admin) ,errorHandle(deleteOrder))
+
+
+
+export default router

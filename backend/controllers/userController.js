@@ -26,7 +26,6 @@ export const userRegistration = async (req, res) => {
         res.status(200).json({ message: "User register successfully", data: newUser })
 
     } catch (err) {
-        console.error("User registration error:", err);
         res.status(500).json({ error: "Internal server error" })
 
     }
@@ -142,4 +141,3 @@ export const deleteUser = async (req, res) => {
 
     }
 }
-

@@ -1,156 +1,116 @@
 import Order from "../models/orderModel.js";
 
+//create order api
 export const createOrder = async (req, res) => {
     const userId = req.user.id;
-    const { products, shippingAddress, phoneNumber, totalAmount, paymentMethod } = req.body;
+    const { products, shippingAddress, phoneNumber, totalAmount, paymentMethod, orderStatus } = req.body;
 
-    console.log("ShippingAddress : ", shippingAddress);
+    console.log("ShippingAddress : ", shippingAddress)
 
     if (!userId) {
         return res.status(400).json({ message: "User not found" });
     }
 
-    // Fix validation syntax
-    if (!products || products.length === 0 || !shippingAddress || !phoneNumber || !totalAmount || !paymentMethod) {
-        return res.status(400).json({ message: "All fields are required" });
+    //array products.length
+    if (products.length == 0 || !shippingAddress, !phoneNumber, !totalAmount, !paymentMethod, !orderStatus) {
+        return res.status(400).json({ message: "All field are required" });
     }
 
-    const newOrder = await Order.create({
+    //payment method
+    // if(paymentMethod==='khalti'){
+    //     console.log("Redirect to the khalti");
+
+    // }else if(paymentMethod==='cod'){
+    //     console.log("Direct cash on hand");
+    // }else{
+    //     console.log("Select the valid payment method");
+    // }
+
+    const createOrder = await Order.create({
         userId,
         products,
         phoneNumber,
         totalAmount,
         paymentMethod,
-        shippingAddress
-        // orderStatus will use default 'pending'
-    });
+        shippingAddress,
+        orderStatus
+    })
 
-    res.status(201).json({ message: "Order placed successfully", data: newOrder });
-};
+    res.status(200).json({ message: "Order places succcessfull", data: createOrder });
+}
 
-// Get orders of the logged-in user
-export const getMyOrders = async (req, res) => {
-    const userId = req.user.id;
 
-    const orders = await Order.find({ userId })
-        .populate('products.productId', 'productName productPrice productImageUrl')
-        .sort({ createdAt: -1 });
-
-    if (!orders || orders.length === 0) {
-        return res.status(200).json({ 
-            message: "No orders found", 
-            data: [] 
-        });
-    }
-
-    res.status(200).json({ 
-        message: "Orders fetched successfully", 
-        data: orders,
-        totalOrders: orders.length
-    });
-};
-
-// Get all orders (Admin only)
+//get all the order
 export const getAllOrders = async (req, res) => {
-    const orders = await Order.find()
-        .populate('userId', 'username email')
-        .populate('products.productId', 'productName productPrice productImageUrl')
-        .sort({ createdAt: -1 });
+    const orders = await Order.find();
+    res.status(200).json({ message: "Successfully get  my orders", data: orders })
+}
 
-    res.status(200).json({ 
-        message: "All orders fetched successfully", 
-        data: orders,
-        totalOrders: orders.length
-    });
-};
 
-// Get single order details
+//get single order
 export const getSingleOrder = async (req, res) => {
-    const { id } = req.params;
+    // const {id}=req.params;
+    const orders = await Order.findById(req.params.id);
+    if (!orders) {
+        return res.status(404).json({ message: "Order cannot be null" });
+    }
+    res.status(200).json({ message: "Successfully get the single order", data: orders })
+}
+
+
+//get my orders
+export const getMyOrder = async (req, res) => {
     const userId = req.user.id;
-    const userRole = req.user.role;
-
-    let order;
-    
-    // Admin can see any order, users can only see their own
-    if (userRole === 'admin') {
-        order = await Order.findById(id)
-            .populate('userId', 'username email')
-            .populate('products.productId', 'productName productPrice productImageUrl');
-    } else {
-        order = await Order.findOne({ _id: id, userId })
-            .populate('products.productId', 'productName productPrice productImageUrl');
+    const orders = await Order.find({ userId });
+    if (orders.length === 0) {
+        return res.status(404).json({ message: "Order cannot be null" });
     }
+    res.status(200).json({ message: "Successfully get  my orders", data: orders })
+}
 
-    if (!order) {
-        return res.status(404).json({ message: "Order not found" });
-    }
 
-    res.status(200).json({ 
-        message: "Order fetched successfully", 
-        data: order 
-    });
-};
-
-// Update order status (Admin only)
+//admin update orderstatus
 export const updateOrderStatus = async (req, res) => {
     const { id } = req.params;
+    console.log("Id : ", id)
     const { orderStatus } = req.body;
 
-    if (!orderStatus) {
-        return res.status(400).json({ message: "Order status is required" });
-    }
+    console.log("OrderStatus", orderStatus)
+    const orders = await Order.findByIdAndUpdate(id, { orderStatus }, { new: true });
+    res.status(200).json({ message: "Successfully update the order", data: orders })
 
-    const validStatuses = ['pending', 'ontheway', 'delivered', 'cancelled'];
-    if (!validStatuses.includes(orderStatus)) {
-        return res.status(400).json({ 
-            message: "Invalid order status. Valid options: pending, ontheway, delivered, cancelled" 
-        });
-    }
+}
 
-    const order = await Order.findByIdAndUpdate(
-        id, 
-        { orderStatus }, 
-        { new: true }
-    ).populate('products.productId', 'productName productPrice');
-
-    if (!order) {
-        return res.status(404).json({ message: "Order not found" });
-    }
-
-    res.status(200).json({ 
-        message: "Order status updated successfully", 
-        data: order 
-    });
-};
-
-// Delete order
+// delete order
 export const deleteOrder = async (req, res) => {
     const { id } = req.params;
-    const userId = req.user.id;
-    const userRole = req.user.role;
+    const orders = await Order.findByIdAndDelete(id);
+    if (!orders) {
+        return res.status(404).json({ message: "Order cannot be null" });
+    }
+    res.status(200).json({ message: "Successfully delete the order" })
+}
 
-    let order;
-    
-    // Admin can delete any order, users can only delete their orders
-    if (userRole === 'admin') {
-        order = await Order.findByIdAndDelete(id);
+
+//cancel order
+export const cancleOrder = async (req, res) => {
+    const { id } = req.params;
+    const orders = await Order.findById(id);
+    if (!orders) {
+        return res.status(404).json({ message: "Order not found" })
+    }
+
+    if (orders.orderStatus === "pending") {
+        orders.orderStatus = "cancalled";
+        await orders.save();
     } else {
-        // Users can only cancel pending orders
-        order = await Order.findOneAndDelete({ 
-            _id: id, 
-            userId, 
-            orderStatus: 'pending' 
-        });
+        return res.status(404).json({ message: "Order must be pending for the cancellation" })
     }
 
-    if (!order) {
-        return res.status(404).json({ 
-            message: userRole === 'admin' 
-                ? "Order not found" 
-                : "Order not found or cannot be cancelled as pending" 
-        });
-    }
+    res.status(200).json({ message: "Successfully change the order status", hello: orders })
 
-    res.status(200).json({ message: "Order deleted successfully" });
-};
+}
+
+
+//feel free to add
+//review and rating -> if orderStatus delivered xa van matra review or rating dina thau khulnu paro

@@ -8,7 +8,9 @@ const productSchema = new mongoose.Schema({
     productImageUrl: { type: String },
     totalRating: { type: Number},
     category: { type: String, required: true },
+    userId: { type: mongoose.Schema.Types.ObjectId, ref:'User', required: true } //references from user model
 },{timestamps:true});
+
 
 const Product=mongoose.model("Product", productSchema);
 

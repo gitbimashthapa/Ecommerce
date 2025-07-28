@@ -2,16 +2,14 @@ import { Router } from "express";
 import errorHandle from "../services/errorHandler.js";
 import { isAuthenticated, restrictTo, Role } from "../middleware/authMiddleware.js";
 import { createCategory, deleteCategory, fetchSingleCategory, getAllCategory, updateCategory } from "../controllers/categoryController.js";
+const router=Router();
 
-const router = Router();
 
-// Admin only routes
-router.route("/create").post(isAuthenticated, restrictTo(Role.Admin), errorHandle(createCategory))
-router.route("/update/:id").patch(isAuthenticated, restrictTo(Role.Admin), errorHandle(updateCategory))
-router.route("/delete/:id").delete(isAuthenticated, restrictTo(Role.Admin), errorHandle(deleteCategory))
+router.route("/").post(isAuthenticated, restrictTo(Role.Admin),errorHandle(createCategory))
+.get(getAllCategory)
 
-// Public routes
-router.route("/getAll").get(errorHandle(getAllCategory))
-router.route("/single/:id").get(errorHandle(fetchSingleCategory))
+router.route("/:id").get(errorHandle(fetchSingleCategory))
+.patch(isAuthenticated, restrictTo(Role.Admin), errorHandle(updateCategory))
+.delete(isAuthenticated, restrictTo(Role.Admin), errorHandle(deleteCategory))
 
 export default router;
