@@ -112,5 +112,6 @@ export const cancleOrder = async (req, res) => {
 }
 
 
-//feel free to add
-//review and rating -> if orderStatus delivered xa van matra review or rating dina thau khulnu paro
+//✅ REVIEW AND RATING IMPLEMENTED!
+//Review routes: /api/review/create - Only for delivered orders
+//Check ratingReviewController.js and ratingReviewRoutes.js
