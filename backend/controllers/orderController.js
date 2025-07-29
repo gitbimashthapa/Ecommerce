@@ -1,4 +1,6 @@
+import axios from "axios";
 import Order from "../models/orderModel.js";
+import Payment from "../models/paymentModel.js";
 
 //create order api
 export const createOrder = async (req, res) => {
@@ -10,23 +12,12 @@ export const createOrder = async (req, res) => {
     if (!userId) {
         return res.status(400).json({ message: "User not found" });
     }
-
     //array products.length
-    if (products.length == 0 || !shippingAddress, !phoneNumber, !totalAmount, !paymentMethod, !orderStatus) {
+    if (!products || products.length == 0 || !shippingAddress, !phoneNumber, !totalAmount, !paymentMethod, !orderStatus) {
         return res.status(400).json({ message: "All field are required" });
     }
 
-    //payment method
-    // if(paymentMethod==='khalti'){
-    //     console.log("Redirect to the khalti");
-
-    // }else if(paymentMethod==='cod'){
-    //     console.log("Direct cash on hand");
-    // }else{
-    //     console.log("Select the valid payment method");
-    // }
-
-    const createOrder = await Order.create({
+    const orderData = await Order.create({
         userId,
         products,
         phoneNumber,
@@ -36,7 +27,32 @@ export const createOrder = async (req, res) => {
         orderStatus
     })
 
-    res.status(200).json({ message: "Order places succcessfull", data: createOrder });
+    // payment vana collection ma  data saved garna 
+    const paymentData = await Payment.create({ userId, paymentMethod, totalAmount, orderId: orderData.id, paymentStatus: "pending", });
+
+    //
+    if (paymentMethod === 'khalti') {
+        const khaltiPayload = {
+            return_url: "http://localhost:3000/success/",
+            website_url: "https://localhost:5173",
+            amount: totalAmount * 100,
+            purchase_order_id: orderData.id,
+            purchase_order_name: "test",
+        }
+
+        const khaltiResponse = await axios.post(
+            'https://dev.khalti.com/api/v2/epayment/initiate/', khaltiPayload,
+            {
+                headers: {
+                    Authorization: 'key bd2b92f5a5f64b4b91089e2d1d1e08d9',
+                }
+            }
+        )
+        //update payment record with pidx
+        paymentData.pidx = khaltiResponse.data.pidx;
+        await paymentData.save();
+        res.status(200).json({ message: "Order places succcessfully, Redirect to khalti", url: khaltiResponse.data.payment_url, order: orderData });
+    }
 }
 
 

@@ -1,14 +1,7 @@
 import mongoose from "mongoose";
 
 const orderSchema = new mongoose.Schema({
-    //userId
-    //productId
-    //quantity
-    //shippingAddress
-    //phoneNumber
-    // totalAmout
-    // paymentMethod
-    //orderStatus
+    
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     products: [
         {
