@@ -110,8 +110,3 @@ export const cancleOrder = async (req, res) => {
     res.status(200).json({ message: "Successfully change the order status", hello: orders })
 
 }
-
-
-//✅ REVIEW AND RATING IMPLEMENTED!
-//Review routes: /api/review/create - Only for delivered orders
-//Check ratingReviewController.js and ratingReviewRoutes.js
