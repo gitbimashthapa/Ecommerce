@@ -48,6 +48,8 @@ export const createOrder = async (req, res) => {
                 }
             }
         )
+
+
         //update payment record with pidx
         paymentData.pidx = khaltiResponse.data.pidx;
         await paymentData.save();
