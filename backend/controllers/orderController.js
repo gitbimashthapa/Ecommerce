@@ -48,6 +48,8 @@ export const createOrder = async (req, res) => {
                 }
             }
         )
+
+        
         //update payment record with pidx
         paymentData.pidx = khaltiResponse.data.pidx;
         await paymentData.save();
@@ -126,3 +128,6 @@ export const cancleOrder = async (req, res) => {
     res.status(200).json({ message: "Successfully change the order status", hello: orders })
 
 }
+
+
+
