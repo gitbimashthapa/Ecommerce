@@ -18,7 +18,7 @@ const Home = () => {
 
   const fetchProducts = async () => {
     try {
-      const response = await axios.get('http://localhost:3000/api/products/all');
+      const response = await axios.get('http://localhost:3000/api/product/getAll');
       setProducts(response.data.data || []);
     } catch (err) {
       console.error('Error fetching products:', err);
@@ -30,7 +30,7 @@ const Home = () => {
 
   const fetchCategories = async () => {
     try {
-      const response = await axios.get('http://localhost:3000/api/categories/all');
+      const response = await axios.get('http://localhost:3000/api/category');
       setCategories(response.data.data || []);
     } catch (err) {
       console.error('Error fetching categories:', err);
@@ -236,24 +236,12 @@ const Home = () => {
                       <i className="fas fa-heart"></i>
                     </button>
                   </div>
-                  {/* Stock Status */}
-                  {product.productTotalStockQuantity <= 0 && (
-                    <div className="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded text-xs">
-                      Out of Stock
-                    </div>
-                  )}
-                  {product.productTotalStockQuantity <= 5 && product.productTotalStockQuantity > 0 && (
-                    <div className="absolute top-2 left-2 bg-orange-500 text-white px-2 py-1 rounded text-xs">
-                      Low Stock
-                    </div>
-                  )}
                 </div>
                 <div className="p-4">
                   <h3 className="font-semibold text-lg mb-2">{product.productName}</h3>
                   <p className="text-gray-600 text-sm mb-2 line-clamp-2">{product.productDescription}</p>
                   <div className="flex justify-between items-center mb-2">
                     <span className="text-sm text-gray-500">Category: {product.category}</span>
-                    <span className="text-sm text-gray-500">Stock: {product.productTotalStockQuantity}</span>
                   </div>
                   {product.totalRating && (
                     <div className="flex justify-center items-center mb-2">

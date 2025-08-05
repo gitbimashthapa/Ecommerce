@@ -9,8 +9,16 @@ export const Role={
 
 //
 export const isAuthenticated = async (req, res, next) => {
-    const token = req.headers.authorization;
-    console.log("Received token:", token ? "Token present" : "No token");
+    const authHeader = req.headers.authorization;
+    console.log("Received auth header:", authHeader ? "Header present" : "No header");
+    
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return res.status(401).json({ message: " Token not found or invalid format" });
+    }
+    
+    const token = authHeader.split(' ')[1]; // Extract token from "Bearer token"
+    console.log("Extracted token:", token ? "Token extracted" : "No token after Bearer");
+    
     if (!token) {
         return res.status(401).json({ message: " Token not found" });
     }
