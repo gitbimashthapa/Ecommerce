@@ -8,12 +8,14 @@ const Home = () => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [cart, setCart] = useState([]);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
     setIsLoggedIn(!!token);
     fetchProducts();
     fetchCategories();
+    loadCartFromStorage();
   }, []);
 
   const fetchProducts = async () => {
@@ -37,31 +39,43 @@ const Home = () => {
     }
   };
 
-  const addToCart = async (productId) => {
-    if (!isLoggedIn) {
-      alert('Please login to add items to cart');
-      return;
+  const loadCartFromStorage = () => {
+    const savedCart = localStorage.getItem('cart');
+    if (savedCart) {
+      setCart(JSON.parse(savedCart));
+    }
+  };
+
+  const saveCartToStorage = (cartData) => {
+    localStorage.setItem('cart', JSON.stringify(cartData));
+  };
+
+  const addToCart = (product) => {
+    const existingItem = cart.find(item => item._id === product._id);
+    let updatedCart;
+
+    if (existingItem) {
+      updatedCart = cart.map(item =>
+        item._id === product._id
+          ? { ...item, quantity: item.quantity + 1 }
+          : item
+      );
+    } else {
+      updatedCart = [...cart, { ...product, quantity: 1 }];
     }
 
-    try {
-      const token = localStorage.getItem('token');
-      await axios.post(
-        'http://localhost:3000/api/cart/add',
-        {
-          productId,
-          quantity: 1
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        }
-      );
-      alert('Product added to cart successfully!');
-    } catch (err) {
-      console.error('Error adding to cart:', err);
-      alert('Failed to add product to cart');
-    }
+    setCart(updatedCart);
+    saveCartToStorage(updatedCart);
+    
+    // Show success message
+    const itemName = product.productName.length > 20 
+      ? product.productName.substring(0, 20) + '...' 
+      : product.productName;
+    alert(`${itemName} added to cart successfully!`);
+  };
+
+  const getCartItemCount = () => {
+    return cart.reduce((total, item) => total + item.quantity, 0);
   };
 
   const addToWishlist = async (productId) => {
@@ -91,7 +105,7 @@ const Home = () => {
   return (
     <>
       {/* Integrated Navbar Component */}
-      <Navbar />
+      <Navbar cartItemCount={getCartItemCount()} />
       
       {/* Top Banner with Animation */}
       <div className="offer-banner bg-gradient-to-r from-red-400 to-red-500 text-white text-center py-3 font-medium relative overflow-hidden">
@@ -224,7 +238,7 @@ const Home = () => {
                   <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300"></div>
                   <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 flex gap-2">
                     <button
-                      onClick={() => addToCart(product._id)}
+                      onClick={() => addToCart(product)}
                       className="bg-red-500 text-white px-4 py-2 rounded-full hover:bg-red-600 transition-colors text-sm"
                     >
                       Add to Cart
