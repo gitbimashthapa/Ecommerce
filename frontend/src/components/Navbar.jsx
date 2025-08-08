@@ -69,14 +69,14 @@ const Navbar = ({ cartItemCount = 0 }) => {
               <a href="#" className="text-gray-800 hover:text-red-500 transition-all duration-300 hover:-translate-y-1">
                 <i className="fas fa-search text-xl"></i>
               </a>
-              <a href="#" className="text-gray-800 hover:text-red-500 transition-all duration-300 hover:-translate-y-1 relative">
+              <Link to="/cart" className="text-gray-800 hover:text-red-500 transition-all duration-300 hover:-translate-y-1 relative">
                 <i className="fas fa-shopping-cart text-xl"></i>
                 {cartItemCount > 0 && (
                   <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
                     {cartItemCount}
                   </span>
                 )}
-              </a>
+              </Link>
             </div>
             
             {isLoggedIn ? (

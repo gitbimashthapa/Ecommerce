@@ -3,6 +3,7 @@ import Home from './pages/Home';
 import Register from './pages/Register';
 import Login from './pages/Login';
 import AdminDashboard from './pages/AdminDashboard/AdminDashboard';
+import CartPage from './pages/CartPage';
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
         <Route path='/register' element={<Register />} />
         <Route path='/login' element={<Login />} />
         <Route path='/admin' element={<AdminDashboard />} />
+        <Route path='/cart' element={<CartPage />} />
       </Routes>
     </BrowserRouter>
   );
