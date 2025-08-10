@@ -4,6 +4,7 @@ import Register from './pages/Register';
 import Login from './pages/Login';
 import AdminDashboard from './pages/AdminDashboard/AdminDashboard';
 import CartPage from './pages/CartPage';
+import Wishlist from './pages/Wishlist';
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         <Route path='/login' element={<Login />} />
         <Route path='/admin' element={<AdminDashboard />} />
         <Route path='/cart' element={<CartPage />} />
+        <Route path='/wishlist' element={<Wishlist />} />
       </Routes>
     </BrowserRouter>
   );

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import Navbar from '../components/Navbar';
 
 const CartPage = () => {
@@ -7,6 +8,10 @@ const CartPage = () => {
   const [cart, setCart] = useState([]);
   const [paymentStatus, setPaymentStatus] = useState('idle'); // idle, processing, success, failed
   const [paymentMethod, setPaymentMethod] = useState('khalti');
+  const [orderData, setOrderData] = useState(null);
+  const [shippingAddress, setShippingAddress] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [showShippingForm, setShowShippingForm] = useState(false);
 
   useEffect(() => {
     loadCartFromStorage();
@@ -63,24 +68,95 @@ const CartPage = () => {
       return;
     }
 
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert('Please login to place an order');
+      navigate('/login');
+      return;
+    }
+
+    // Show shipping form if not filled
+    if (!shippingAddress || !phoneNumber) {
+      setShowShippingForm(true);
+      return;
+    }
+
     setPaymentStatus('processing');
 
-    // Simulate payment processing
-    setTimeout(() => {
-      const isSuccess = Math.random() > 0.2; // 80% success rate
-      if (isSuccess) {
+    try {
+      // Prepare order data
+      const orderPayload = {
+        products: cart.map(item => ({
+          productId: item._id,
+          quantity: item.quantity,
+          price: item.productPrice
+        })),
+        shippingAddress: shippingAddress,
+        phoneNumber: phoneNumber,
+        totalAmount: parseFloat(getTotalPrice()) + parseFloat(getTotalPrice()) * 0.1, // Including tax
+        paymentMethod: paymentMethod === 'cash' ? 'cod' : 'khalti',
+        orderStatus: 'pending'
+      };
+
+      console.log('Creating order with payload:', orderPayload);
+
+      // Create order
+      const response = await axios.post('http://localhost:3000/api/order/', orderPayload, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      console.log('Order response:', response.data);
+
+      if (paymentMethod === 'cash') {
+        // COD - Order created successfully
         setPaymentStatus('success');
+        setOrderData(response.data.order);
         clearCart();
+        
         setTimeout(() => {
           setPaymentStatus('idle');
-        }, 3000);
+          setOrderData(null);
+        }, 5000);
       } else {
-        setPaymentStatus('failed');
-        setTimeout(() => {
-          setPaymentStatus('idle');
-        }, 3000);
+        // Khalti payment - redirect to payment URL
+        if (response.data.url) {
+          window.open(response.data.url, '_blank');
+          setPaymentStatus('success');
+          setOrderData(response.data.order);
+          
+          // Simulate payment verification (in real app, this would be handled by Khalti callback)
+          setTimeout(async () => {
+            try {
+              // You would verify payment here with the pidx
+              setPaymentStatus('success');
+              clearCart();
+              
+              setTimeout(() => {
+                setPaymentStatus('idle');
+                setOrderData(null);
+              }, 5000);
+            } catch (err) {
+              console.error('Payment verification failed:', err);
+              setPaymentStatus('failed');
+              setTimeout(() => setPaymentStatus('idle'), 3000);
+            }
+          }, 3000);
+        }
       }
-    }, 2000);
+    } catch (error) {
+      console.error('Order creation failed:', error);
+      setPaymentStatus('failed');
+      
+      const errorMessage = error.response?.data?.message || 'Failed to process order';
+      alert(errorMessage);
+      
+      setTimeout(() => {
+        setPaymentStatus('idle');
+      }, 3000);
+    }
   };
 
   const getCartItemCount = () => {
@@ -212,6 +288,62 @@ const CartPage = () => {
                   </div>
                 </div>
 
+                {/* Shipping Information */}
+                <div className="mb-6">
+                  <h3 className="text-lg font-medium text-gray-700 mb-4">Shipping Information</h3>
+                  {!showShippingForm && shippingAddress && phoneNumber ? (
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                      <p className="text-sm text-gray-600 mb-1">Address:</p>
+                      <p className="font-medium mb-2">{shippingAddress}</p>
+                      <p className="text-sm text-gray-600 mb-1">Phone:</p>
+                      <p className="font-medium mb-2">{phoneNumber}</p>
+                      <button
+                        onClick={() => setShowShippingForm(true)}
+                        className="text-blue-500 text-sm hover:text-blue-700"
+                      >
+                        Edit Information
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Shipping Address *
+                        </label>
+                        <textarea
+                          value={shippingAddress}
+                          onChange={(e) => setShippingAddress(e.target.value)}
+                          placeholder="Enter your complete address"
+                          className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                          rows="3"
+                          required
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Phone Number *
+                        </label>
+                        <input
+                          type="tel"
+                          value={phoneNumber}
+                          onChange={(e) => setPhoneNumber(e.target.value)}
+                          placeholder="Enter your phone number"
+                          className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                          required
+                        />
+                      </div>
+                      {shippingAddress && phoneNumber && (
+                        <button
+                          onClick={() => setShowShippingForm(false)}
+                          className="text-green-500 text-sm hover:text-green-700"
+                        >
+                          ✓ Information Saved
+                        </button>
+                      )}
+                    </div>
+                  )}
+                </div>
+
                 {/* Payment Method */}
                 <div className="mb-6">
                   <label className="block text-sm font-medium text-gray-700 mb-3">Payment Method</label>
@@ -258,8 +390,17 @@ const CartPage = () => {
                         <div className="flex items-center">
                           <i className="fas fa-check-circle text-green-500 mr-3"></i>
                           <div>
-                            <p className="text-green-700 font-medium">Payment Successful!</p>
-                            <p className="text-green-600 text-sm">Your order has been placed.</p>
+                            <p className="text-green-700 font-medium">
+                              {paymentMethod === 'cash' ? 'Order Placed Successfully!' : 'Payment Successful!'}
+                            </p>
+                            <p className="text-green-600 text-sm">
+                              {orderData && `Order ID: ${orderData._id}`}
+                            </p>
+                            <p className="text-green-600 text-sm">
+                              {paymentMethod === 'cash' 
+                                ? 'Your order will be delivered with Cash on Delivery.' 
+                                : 'Your payment has been processed.'}
+                            </p>
                           </div>
                         </div>
                       </div>
@@ -292,10 +433,15 @@ const CartPage = () => {
                   {paymentStatus === 'processing' ? (
                     <span className="flex items-center justify-center">
                       <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                      Processing...
+                      {paymentMethod === 'cash' ? 'Placing Order...' : 'Processing Payment...'}
                     </span>
                   ) : (
-                    `Pay $${(parseFloat(getTotalPrice()) + parseFloat(getTotalPrice()) * 0.1).toFixed(2)}`
+                    <>
+                      {paymentMethod === 'cash' 
+                        ? `Place Order - $${(parseFloat(getTotalPrice()) + parseFloat(getTotalPrice()) * 0.1).toFixed(2)} (COD)`
+                        : `Pay with Khalti - $${(parseFloat(getTotalPrice()) + parseFloat(getTotalPrice()) * 0.1).toFixed(2)}`
+                      }
+                    </>
                   )}
                 </button>
 

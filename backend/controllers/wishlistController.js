@@ -49,3 +49,4 @@ export const removeProductFromWhishlist= async(req, res)=>{
     res.status(200).json({message : "Product is successfully removed from the wishlist", data:wishlist});
 }
 
+

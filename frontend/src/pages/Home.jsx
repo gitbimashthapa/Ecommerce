@@ -87,7 +87,7 @@ const Home = () => {
     try {
       const token = localStorage.getItem('token');
       await axios.post(
-        'http://localhost:3000/api/wishlist/add',
+        'http://localhost:3000/api/wishlist/',
         { productId },
         {
           headers: {
@@ -98,7 +98,8 @@ const Home = () => {
       alert('Product added to wishlist successfully!');
     } catch (err) {
       console.error('Error adding to wishlist:', err);
-      alert('Failed to add product to wishlist');
+      const errorMessage = err.response?.data?.message || 'Failed to add product to wishlist';
+      alert(errorMessage);
     }
   };
 

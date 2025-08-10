@@ -4,7 +4,7 @@ import Product from "../models/productModel.js"
 
 //add to cart api
 export const addToCart = async (req, res) => {
-    const  userId  = req.user.id;  //optional chaining
+    const  userId  = req.user.id;
 
     const { productId, quantity } = req.body;
     console.log("ProductId : ", productId)
@@ -43,7 +43,7 @@ export const getCartItem= async(req, res)=>{
 
 //update cart item
 export const updateCartItem = async (req, res) => {
-    const  userId  = req.user.id;  //optional chaining
+    const  userId  = req.user.id;
 
     const { productId, quantity } = req.body;
 
@@ -70,7 +70,7 @@ export const updateCartItem = async (req, res) => {
 
 //delete
 export const deleteCartItem = async (req, res) => {
-    const  userId  = req.user.id;  //optional chaining
+    const  userId  = req.user.id;
     const { productId } = req.params;
     console.log("userId : ", userId);
     console.log("productId : ",productId);

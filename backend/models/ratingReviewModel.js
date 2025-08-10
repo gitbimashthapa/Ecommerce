@@ -9,3 +9,8 @@ const ratingReviewSchema= new mongoose.Schema({
 
 const RatingReview =mongoose.model("RatingReview", ratingReviewSchema);
 export default  RatingReview
+
+
+
+
+

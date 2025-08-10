@@ -30,7 +30,6 @@ export const createOrder = async (req, res) => {
     // payment vana collection ma  data saved garna 
     const paymentData = await Payment.create({ userId, paymentMethod, totalAmount, orderId: orderData.id, paymentStatus: "pending", });
 
-    //
     if (paymentMethod === 'khalti') {
         const khaltiPayload = {
             return_url: "http://localhost:3000/success/",
@@ -128,6 +127,8 @@ export const cancleOrder = async (req, res) => {
     res.status(200).json({ message: "Successfully change the order status", hello: orders })
 
 }
+
+
 
 
 
