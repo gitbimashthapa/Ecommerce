@@ -89,47 +89,31 @@ const Navbar = ({ cartItemCount = 0 }) => {
                   <i className="fas fa-search"></i>
                 </span>
               </div>
-              {/* Category Filter Button */}
-              <button
-                onClick={() => setShowCategoryPopup(true)}
-                className="px-4 py-2 bg-gray-100 text-gray-800 rounded-full font-medium border border-gray-300 hover:bg-gray-200 transition"
-              >
-                {selectedCategory ? `Category: ${selectedCategory}` : "Category"}
-              </button>
-              {selectedCategory && (
-                <button
-                  onClick={() => setSelectedCategory("")}
-                  className="px-3 py-2 bg-gray-200 text-gray-700 rounded-full text-xs ml-1 border border-gray-300"
+              {/* Category Dropdown Filter - Modern UI */}
+              <div className="relative flex items-center">
+                <span className="absolute left-3 text-gray-400">
+                  <i className="fas fa-th-large"></i>
+                </span>
+                <select
+                  id="categoryFilter"
+                  value={selectedCategory}
+                  onChange={e => setSelectedCategory(e.target.value)}
+                  className="pl-10 pr-4 py-2 rounded-full border border-gray-300 bg-white shadow focus:outline-none focus:ring-2 focus:ring-blue-400 transition w-40 text-gray-800"
                 >
-                  Clear
-                </button>
-              )}
-      {/* Category Popup Modal */}
-      {showCategoryPopup && (
-        <div className="fixed inset-0 bg-black bg-opacity-20 flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl shadow-lg p-5 min-w-[260px] border border-gray-200">
-            <h3 className="text-base font-semibold mb-3 text-gray-700">Select Category</h3>
-            <ul className="space-y-1">
-              {categories.map(cat => (
-                <li key={cat._id}>
+                  <option value="">Category</option>
+                  {categories.map(cat => (
+                    <option key={cat._id} value={cat.categoryName}>{cat.categoryName}</option>
+                  ))}
+                </select>
+                {selectedCategory && (
                   <button
-                    className={`w-full text-left px-4 py-2 rounded-full border border-gray-200 hover:bg-gray-100 ${selectedCategory === cat.categoryName ? "bg-gray-200 font-bold" : ""}`}
-                    onClick={() => { setSelectedCategory(cat.categoryName); setShowCategoryPopup(false); }}
+                    onClick={() => setSelectedCategory("")}
+                    className="ml-2 px-3 py-2 bg-gray-100 text-gray-700 rounded-full text-xs border border-gray-300 shadow"
                   >
-                    {cat.categoryName}
+                    <i className="fas fa-times mr-1"></i>Clear
                   </button>
-                </li>
-              ))}
-            </ul>
-            <button
-              className="mt-5 w-full bg-gray-100 text-gray-700 py-2 rounded-full border border-gray-300"
-              onClick={() => setShowCategoryPopup(false)}
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      )}
+                )}
+              </div>
               {/* Wishlist and Cart */}
               <Link to="/wishlist" className="text-gray-800 hover:text-red-500 transition-all duration-300 hover:-translate-y-1">
                 <i className="fas fa-heart text-xl"></i>

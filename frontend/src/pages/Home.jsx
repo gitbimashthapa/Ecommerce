@@ -119,6 +119,8 @@ const Home = () => {
       <Navbar cartItemCount={getCartItemCount()} />
 
   {/* ...existing code... */}
+
+  {/* ...existing code... */}
       <div className="offer-banner bg-gradient-to-r from-red-400 to-red-500 text-white text-center py-3 font-medium relative overflow-hidden">
         <style jsx>{`
           .offer-banner::before {
