@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Navbar from '../components/Navbar';
+import { toast } from 'react-hot-toast';
 
 const Home = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -69,12 +70,11 @@ const Home = () => {
 
     setCart(updatedCart);
     saveCartToStorage(updatedCart);
-    
-    // Show success message
+    // Show toast notification
     const itemName = product.productName.length > 20 
       ? product.productName.substring(0, 20) + '...' 
       : product.productName;
-    alert(`${itemName} added to cart successfully!`);
+    toast.success(`${itemName} added to cart successfully!`);
   };
 
   const getCartItemCount = () => {
@@ -83,7 +83,7 @@ const Home = () => {
 
   const addToWishlist = async (productId) => {
     if (!isLoggedIn) {
-      alert('Please login to add items to wishlist');
+      toast.error('Please login to add items to wishlist');
       return;
     }
 
@@ -98,11 +98,11 @@ const Home = () => {
           }
         }
       );
-      alert('Product added to wishlist successfully!');
+      toast.success('Product added to wishlist successfully!');
     } catch (err) {
       console.error('Error adding to wishlist:', err);
       const errorMessage = err.response?.data?.message || 'Failed to add product to wishlist';
-      alert(errorMessage);
+      toast.error(errorMessage);
     }
   };
 

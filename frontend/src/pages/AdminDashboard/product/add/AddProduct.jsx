@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { toast } from 'react-hot-toast';
 
 const AddProduct = () => {
   const [categories, setCategories] = useState([]);
@@ -73,9 +74,7 @@ const AddProduct = () => {
           'Content-Type': 'multipart/form-data'
         }
       });
-      
-      alert('Product created successfully');
-      
+      toast.success('Product created successfully');
       // Reset form
       setFormData({
         productName: '',
@@ -89,7 +88,7 @@ const AddProduct = () => {
       setPreviewImage('');
     } catch (error) {
       console.error('Error creating product:', error);
-      alert('Failed to create product');
+      toast.error('Failed to create product');
     } finally {
       setLoading(false);
     }

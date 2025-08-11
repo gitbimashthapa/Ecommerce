@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import axios from "axios";
 import { Link, useNavigate } from 'react-router-dom'
 import Navbar from '../components/Navbar';
+import { toast } from 'react-hot-toast';
 
 const Register = () => {
     //hook 
@@ -27,11 +28,11 @@ const Register = () => {
         try {
             const response = await axios.post("http://localhost:3000/api/register", userData);
             console.log("Data in the response : ", response.data);
-            alert("User successfully registered");
+            toast.success("User successfully registered");
             navigate("/login");
         } catch (err) {
             console.error("Registration error:", err);
-            alert("Registration failed. Please try again.");
+            toast.error("Registration failed. Please try again.");
         }
     }
 

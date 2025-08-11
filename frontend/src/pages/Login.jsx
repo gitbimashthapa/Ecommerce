@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { toast } from 'react-hot-toast';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
@@ -27,23 +28,23 @@ const Login = () => {
         localStorage.setItem('userRole', response.data.data.role);
         localStorage.setItem('userName', response.data.data.username);
         window.dispatchEvent(new Event('authChange'));
-        alert('Login successful!');
+        toast.success('Login successful!');
         navigate('/');
       } else {
-        alert('Login failed - no token received');
+        toast.error('Login failed - no token received');
       }
     } catch (err) {
       console.error('Login error:', err);
       if (err.response?.status === 404) {
         if (err.response.data.message === 'User not found') {
-          alert('No account found with this email. Please register first.');
+          toast.error('No account found with this email. Please register first.');
         } else if (err.response.data.message === 'Password not matched') {
-          alert('Incorrect password. Please try again.');
+          toast.error('Incorrect password. Please try again.');
         } else {
-          alert('Login failed. Please check your credentials.');
+          toast.error('Login failed. Please check your credentials.');
         }
       } else {
-        alert('Login failed. Please try again.');
+        toast.error('Login failed. Please try again.');
       }
     }
   };
@@ -131,16 +132,16 @@ const Login = () => {
                       </span>
                     </button>
                   </form>
-                  <p className="mt-6 text-xs text-gray-600 text-center">
-                    I agree to abide by templatana's
-                    <a href="#" className="border-b border-gray-500 border-dotted">
-                      Terms of Service
-                    </a>
+                  <button
+                    type="button"
+                    className="mt-6 text-xs text-gray-600 text-center w-full"
+                    onClick={() => toast.success('Thank you for agreeing to Ecommerce Terms of Service and Privacy Policy!')}
+                  >
+                    I agree to abide by Ecommerce's
+                    <span className="border-b border-gray-500 border-dotted mx-1">Terms of Service</span>
                     and its
-                    <a href="#" className="border-b border-gray-500 border-dotted">
-                      Privacy Policy
-                    </a>
-                  </p>
+                    <span className="border-b border-gray-500 border-dotted mx-1">Privacy Policy</span>
+                  </button>
                   <p className="text-sm font-light text-gray-500 mt-4">
                     Don't have an account yet? <Link to="/register" className="font-medium text-indigo-600 hover:underline">Sign up</Link>
                   </p>

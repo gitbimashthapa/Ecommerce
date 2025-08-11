@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'react-hot-toast';
 
 const Navbar = ({ cartItemCount = 0, selectedCategory, setSelectedCategory }) => {
   const navigate = useNavigate();
@@ -45,7 +46,7 @@ const Navbar = ({ cartItemCount = 0, selectedCategory, setSelectedCategory }) =>
     localStorage.removeItem("userRole");
     localStorage.removeItem("userName");
     window.dispatchEvent(new Event('authChange'));
-    alert('Logged out successfully!');
+    toast.success('Logged out successfully!');
     navigate('/');
   };
 
