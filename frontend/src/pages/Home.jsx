@@ -14,17 +14,21 @@ const Home = () => {
   const [showCategoryPopup, setShowCategoryPopup] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("");
 
+  // Diagnostic log for homepage product data
+  useEffect(() => {
+    if (products && products.length > 0) {
+      console.log('Homepage products:', products.map(p => ({
+        id: p._id,
+        name: p.productName,
+        imageUrl: p.productImageUrl
+      })));
+    }
+  }, [products]);
+
   useEffect(() => {
     const token = localStorage.getItem('token');
     setIsLoggedIn(!!token);
-    // Try to load products from localStorage first
-    const cachedProducts = localStorage.getItem('products');
-    if (cachedProducts) {
-      setProducts(JSON.parse(cachedProducts));
-      setLoading(false);
-    } else {
-      fetchProducts();
-    }
+    fetchProducts();
     fetchCategories();
     loadCartFromStorage();
   }, []);
@@ -33,7 +37,6 @@ const Home = () => {
     try {
       const response = await axios.get('http://localhost:3000/api/product/getAll');
       setProducts(response.data.data || []);
-      localStorage.setItem('products', JSON.stringify(response.data.data || []));
     } catch (err) {
       console.error('Error fetching products:', err);
       setError('Failed to load products');

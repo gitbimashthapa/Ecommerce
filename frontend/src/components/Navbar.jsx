@@ -118,6 +118,9 @@ const Navbar = ({ cartItemCount = 0, selectedCategory, setSelectedCategory }) =>
               <Link to="/wishlist" className="text-gray-800 hover:text-red-500 transition-all duration-300 hover:-translate-y-1">
                 <i className="fas fa-heart text-xl"></i>
               </Link>
+                <Link to="/purchase-history" className="text-gray-800 hover:text-blue-500 transition-all duration-300 hover:-translate-y-1">
+                  <i className="fas fa-history mr-1"></i> Purchase History
+                </Link>
               <Link to="/cart" className="text-gray-800 hover:text-red-500 transition-all duration-300 hover:-translate-y-1 relative">
                 <i className="fas fa-shopping-cart text-xl"></i>
                 {cartItemCount > 0 && (

@@ -2,8 +2,41 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import Navbar from '../components/Navbar';
+import { toast } from 'react-hot-toast';
 
 const ProductPage = () => {
+  // Cart logic (copied from Home.jsx for consistency)
+  const [cart, setCart] = useState([]);
+  useEffect(() => {
+    const savedCart = localStorage.getItem('cart');
+    if (savedCart) {
+      setCart(JSON.parse(savedCart));
+    }
+  }, []);
+
+  const saveCartToStorage = (cartData) => {
+    localStorage.setItem('cart', JSON.stringify(cartData));
+  };
+
+  const addToCart = (product) => {
+    const existingItem = cart.find(item => item._id === product._id);
+    let updatedCart;
+    if (existingItem) {
+      updatedCart = cart.map(item =>
+        item._id === product._id
+          ? { ...item, quantity: item.quantity + 1 }
+          : item
+      );
+    } else {
+      updatedCart = [...cart, { ...product, quantity: 1 }];
+    }
+    setCart(updatedCart);
+    saveCartToStorage(updatedCart);
+    const itemName = product.productName.length > 20 
+      ? product.productName.substring(0, 20) + '...' 
+      : product.productName;
+    toast.success(`${itemName} added to cart successfully!`);
+  };
   const { id } = useParams();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -55,7 +88,12 @@ const ProductPage = () => {
               <div className="text-3xl font-bold text-purple-600 mb-8">${product.productPrice}</div>
             </div>
             <div className="flex gap-4">
-              <button className="flex-1 bg-gradient-to-r from-purple-500 to-blue-500 text-white py-3 rounded-xl font-bold shadow-lg hover:from-purple-600 hover:to-blue-600 transition">Add to Cart</button>
+              <button
+                className="flex-1 bg-gradient-to-r from-purple-500 to-blue-500 text-white py-3 rounded-xl font-bold shadow-lg hover:from-purple-600 hover:to-blue-600 transition"
+                onClick={() => addToCart(product)}
+              >
+                Add to Cart
+              </button>
               <button className="flex-1 bg-white border-2 border-purple-400 text-purple-700 py-3 rounded-xl font-bold shadow hover:bg-purple-50 transition">Buy Now</button>
             </div>
           </div>

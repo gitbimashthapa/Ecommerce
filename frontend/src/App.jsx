@@ -8,6 +8,7 @@ import CartPage from './pages/CartPage';
 import Wishlist from './pages/Wishlist';
 
 import ProductPage from './pages/ProductPage';
+import PurchaseHistory from './pages/PurchaseHistory';
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
         <Route path='/cart' element={<CartPage />} />
         <Route path='/wishlist' element={<Wishlist />} />
         <Route path='/product/:id' element={<ProductPage />} />
+  <Route path='/purchase-history' element={<PurchaseHistory />} />
       </Routes>
     </BrowserRouter>
   );
