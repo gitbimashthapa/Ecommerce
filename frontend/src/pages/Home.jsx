@@ -228,10 +228,10 @@ const Home = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
             {products.map((product) => (
-              <div key={product._id} className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 animate-fadeInUp">
+              <a key={product._id} href={`/product/${product._id}`} className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 animate-fadeInUp block">
                 <div className="relative overflow-hidden group">
                   <img
-                    src={product.productImageUrl ? `http://localhost:3000/uploads/${product.productImageUrl}` : 'https://via.placeholder.com/300x300?text=No+Image'}
+                    src={product.productImageUrl ? `http://localhost:3000/${product.productImageUrl}` : 'https://via.placeholder.com/300x300?text=No+Image'}
                     alt={product.productName}
                     className="w-full h-64 object-cover"
                     loading="lazy"
@@ -239,13 +239,13 @@ const Home = () => {
                   <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300"></div>
                   <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 flex gap-2">
                     <button
-                      onClick={() => addToCart(product)}
+                      onClick={e => { e.preventDefault(); addToCart(product); }}
                       className="bg-red-500 text-white px-4 py-2 rounded-full hover:bg-red-600 transition-colors text-sm"
                     >
                       Add to Cart
                     </button>
                     <button
-                      onClick={() => addToWishlist(product._id)}
+                      onClick={e => { e.preventDefault(); addToWishlist(product._id); }}
                       className="bg-gray-500 text-white px-4 py-2 rounded-full hover:bg-gray-600 transition-colors text-sm"
                     >
                       <i className="fas fa-heart"></i>
@@ -273,7 +273,7 @@ const Home = () => {
                   )}
                   <p className="text-red-500 font-bold text-xl">${product.productPrice}</p>
                 </div>
-              </div>
+              </a>
             ))}
           </div>
         )}

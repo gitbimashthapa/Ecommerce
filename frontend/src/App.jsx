@@ -6,6 +6,8 @@ import AdminDashboard from './pages/AdminDashboard/AdminDashboard';
 import CartPage from './pages/CartPage';
 import Wishlist from './pages/Wishlist';
 
+import ProductPage from './pages/ProductPage';
+
 function App() {
   return (
     <BrowserRouter>
@@ -16,6 +18,7 @@ function App() {
         <Route path='/admin' element={<AdminDashboard />} />
         <Route path='/cart' element={<CartPage />} />
         <Route path='/wishlist' element={<Wishlist />} />
+  <Route path='/product/:id' element={<ProductPage />} />
       </Routes>
     </BrowserRouter>
   );
