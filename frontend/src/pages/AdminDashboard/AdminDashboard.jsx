@@ -5,6 +5,7 @@ import AddProduct from './product/add/AddProduct';
 import ListCategory from './category/list/ListCategory';
 import AddCategory from './category/add/AddCategory';
 import ListOrder from './order/list/ListOrder';
+import { toast } from 'react-hot-toast';
 
 const AdminDashboard = () => {
   const [sidebarActive, setSidebarActive] = useState('dashboard');
@@ -35,7 +36,7 @@ const AdminDashboard = () => {
 
     // Verify admin role
     if (role !== 'admin') {
-      alert('Access denied. Admin privileges required.');
+      toast.error('Access denied. Admin privileges required!', { duration: 2000 });
       window.location.href = '/';
       return;
     }
@@ -101,8 +102,8 @@ const AdminDashboard = () => {
       setRecentOrders(orders.slice(-5).reverse());
 
     } catch (error) {
-      console.error('Error fetching admin dashboard data:', error);
-      alert('Failed to load admin dashboard data. Please check your admin privileges.');
+  console.error('Error fetching admin dashboard data:', error);
+  toast.error('Failed to load admin dashboard data. Please check your admin privileges.', { duration: 2000 });
     } finally {
       setLoading(false);
     }
@@ -117,24 +118,23 @@ const AdminDashboard = () => {
       });
       setUsers(response.data.data || []);
     } catch (error) {
-      console.error('Error fetching users:', error);
-      alert('Failed to fetch users');
+  console.error('Error fetching users:', error);
+  toast.error('Failed to fetch users', { duration: 2000 });
     }
   };
 
   const deleteUser = async (userId) => {
     if (!window.confirm('Are you sure you want to delete this user?')) return;
-    
     try {
       const token = localStorage.getItem('token');
       await axios.delete(`http://localhost:3000/api/delete/${userId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       fetchUsers();
-      alert('User deleted successfully');
+      toast.success('User deleted successfully', { duration: 2000 });
     } catch (error) {  
       console.error('Error deleting user:', error);
-      alert('Failed to delete user');
+      toast.error('Failed to delete user', { duration: 2000 });
     }
   };
 
@@ -146,10 +146,10 @@ const AdminDashboard = () => {
       });
       fetchUsers();
       setShowModal(false);
-      alert('User updated successfully');
+      toast.success('User updated successfully', { duration: 2000 });
     } catch (error) {
       console.error('Error updating user:', error);
-      alert('Failed to update user');
+      toast.error('Failed to update user', { duration: 2000 });
     }
   };
 
@@ -583,7 +583,7 @@ const AdminDashboard = () => {
         </nav>
         
         <div className="absolute bottom-4 left-4 right-4">
-          <div className="bg-gray-800 rounded-lg p-4">
+          <div className="bg-gray-800 rounded-lg p-4 flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <img src="https://cdn-icons-png.flaticon.com/512/17003/17003310.png" alt="Admin" className="w-10 h-10 rounded-full" />
               <div>
@@ -591,6 +591,21 @@ const AdminDashboard = () => {
                 <p className="text-gray-400 text-xs">{userRole}</p>
               </div>
             </div>
+            <button
+              onClick={() => {
+                localStorage.removeItem('token');
+                localStorage.removeItem('userRole');
+                localStorage.removeItem('userName');
+                window.dispatchEvent(new Event('authChange'));
+                toast.success('Logged out successfully!', { duration: 2000 });
+                window.location.href = '/';
+              }}
+              className="ml-2 bg-red-500 text-white px-2 py-1 rounded-full text-xs hover:bg-red-600 transition duration-200 flex items-center"
+              style={{ minWidth: 'auto', height: '28px' }}
+              title="Logout"
+            >
+              <i className="fas fa-sign-out-alt mr-1"></i>
+            </button>
           </div>
         </div>
       </div>
