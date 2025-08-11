@@ -9,6 +9,9 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [cart, setCart] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [showCategoryPopup, setShowCategoryPopup] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState("");
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -103,12 +106,19 @@ const Home = () => {
     }
   };
 
+  // Filter products by search and category
+  const filteredProducts = products.filter(product => {
+    const matchesSearch = product.productName.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = selectedCategory ? product.category === selectedCategory : true;
+    return matchesSearch && matchesCategory;
+  });
+
   return (
     <>
       {/* Integrated Navbar Component */}
       <Navbar cartItemCount={getCartItemCount()} />
-      
-      {/* Top Banner with Animation */}
+
+  {/* ...existing code... */}
       <div className="offer-banner bg-gradient-to-r from-red-400 to-red-500 text-white text-center py-3 font-medium relative overflow-hidden">
         <style jsx>{`
           .offer-banner::before {
@@ -221,13 +231,13 @@ const Home = () => {
               Retry
             </button>
           </div>
-        ) : products.length === 0 ? (
+        ) : filteredProducts.length === 0 ? (
           <div className="text-center py-16">
-            <p className="text-gray-500 text-lg">No products available at the moment.</p>
+            <p className="text-gray-500 text-lg">No products found for your search/filter.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-            {products.map((product) => (
+            {filteredProducts.map((product) => (
               <a key={product._id} href={`/product/${product._id}`} className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 animate-fadeInUp block">
                 <div className="relative overflow-hidden group">
                   <img
