@@ -116,7 +116,7 @@ const Home = () => {
   return (
     <>
       {/* Integrated Navbar Component */}
-      <Navbar cartItemCount={getCartItemCount()} />
+  <Navbar cartItemCount={getCartItemCount()} selectedCategory={selectedCategory} setSelectedCategory={setSelectedCategory} />
 
   {/* ...existing code... */}
 

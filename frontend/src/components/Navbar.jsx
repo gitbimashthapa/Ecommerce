@@ -2,14 +2,13 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 
-const Navbar = ({ cartItemCount = 0 }) => {
+const Navbar = ({ cartItemCount = 0, selectedCategory, setSelectedCategory }) => {
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userRole, setUserRole] = useState('');
   const [searchTerm, setSearchTerm] = useState("");
   const [categories, setCategories] = useState([]);
   const [showCategoryPopup, setShowCategoryPopup] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState("");
   useEffect(() => {
     // Fetch categories for filter
     const fetchCategories = async () => {
