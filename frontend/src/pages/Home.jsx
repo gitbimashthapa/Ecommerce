@@ -17,7 +17,14 @@ const Home = () => {
   useEffect(() => {
     const token = localStorage.getItem('token');
     setIsLoggedIn(!!token);
-    fetchProducts();
+    // Try to load products from localStorage first
+    const cachedProducts = localStorage.getItem('products');
+    if (cachedProducts) {
+      setProducts(JSON.parse(cachedProducts));
+      setLoading(false);
+    } else {
+      fetchProducts();
+    }
     fetchCategories();
     loadCartFromStorage();
   }, []);
@@ -26,6 +33,7 @@ const Home = () => {
     try {
       const response = await axios.get('http://localhost:3000/api/product/getAll');
       setProducts(response.data.data || []);
+      localStorage.setItem('products', JSON.stringify(response.data.data || []));
     } catch (err) {
       console.error('Error fetching products:', err);
       setError('Failed to load products');
@@ -243,10 +251,22 @@ const Home = () => {
               <a key={product._id} href={`/product/${product._id}`} className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 animate-fadeInUp block">
                 <div className="relative overflow-hidden group">
                   <img
-                    src={product.productImageUrl ? `http://localhost:3000/${product.productImageUrl}` : 'https://via.placeholder.com/300x300?text=No+Image'}
-                    alt={product.productName}
-                    className="w-full h-64 object-cover"
-                    loading="lazy"
+                      src={product.productImageUrl && product.productImageUrl !== 'undefined' && product.productImageUrl !== ''
+                        ? `http://localhost:3000/${product.productImageUrl}`
+                        : 'https://via.placeholder.com/300x300?text=No+Image'}
+                      alt={product.productName}
+                      className="w-full h-64 object-cover"
+                      loading="lazy"
+                      onError={e => {
+                        console.error('Image failed to load:', {
+                          src: e.target.src,
+                          productImageUrl: product.productImageUrl,
+                          productId: product._id,
+                          productName: product.productName
+                        });
+                        e.target.onerror = null;
+                        e.target.src = 'https://via.placeholder.com/300x300?text=No+Image';
+                      }}
                   />
                   <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300"></div>
                   <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 flex gap-2">

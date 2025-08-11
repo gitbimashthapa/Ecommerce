@@ -35,9 +35,12 @@ const ProductPage = () => {
         <div className="max-w-3xl mx-auto rounded-3xl shadow-2xl bg-white p-0 overflow-hidden flex flex-col md:flex-row">
           <div className="md:w-1/2 flex items-center justify-center bg-gradient-to-tr from-purple-200 to-blue-100 p-8">
             <img
-              src={product.productImageUrl ? `http://localhost:3000/uploads/${product.productImageUrl}` : 'https://via.placeholder.com/350x350?text=No+Image'}
+              src={product.productImageUrl && product.productImageUrl !== 'undefined' && product.productImageUrl !== ''
+                ? `http://localhost:3000/${product.productImageUrl}`
+                : 'https://via.placeholder.com/350x350?text=No+Image'}
               alt={product.productName}
               className="w-72 h-72 object-cover rounded-2xl shadow-lg border-4 border-purple-200"
+              onError={e => { e.target.onerror = null; e.target.src = 'https://via.placeholder.com/350x350?text=No+Image'; }}
             />
           </div>
           <div className="md:w-1/2 flex flex-col justify-between p-8">
