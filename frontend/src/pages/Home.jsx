@@ -205,23 +205,6 @@ const Home = () => {
         </div>
       </div>
       
-      {/* Categories Section */}
-      {categories.length > 0 && (
-        <div className="categories-section px-5 py-10 bg-gray-50">
-          <h2 className="text-3xl font-bold text-center mb-8">Shop by Categories</h2>
-          <div className="flex flex-wrap justify-center gap-4">
-            {categories.map((category) => (
-              <div
-                key={category._id}
-                className="bg-white px-6 py-3 rounded-full shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer hover:bg-red-50"
-              >
-                <span className="font-medium text-gray-800">{category.categoryName}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-      
       {/* Featured Products Section */}
       <div className="featured-section px-5 py-16 text-center bg-gradient-to-br from-gray-50 via-white to-purple-100">
         <div className="section-header flex flex-col md:flex-row justify-between items-center mb-10 animate-fadeInUp">
@@ -256,15 +239,17 @@ const Home = () => {
                 style={{ minHeight: '420px' }}
               >
                 <div className="w-full flex items-center justify-center bg-gradient-to-tr from-purple-100 to-blue-50 p-8" style={{ minHeight: '320px' }}>
-                  <img
-                    src={product.productImageUrl && product.productImageUrl !== 'undefined' && product.productImageUrl !== ''
-                      ? `http://localhost:3000/${product.productImageUrl}`
-                      : 'https://via.placeholder.com/500x500?text=No+Image'}
-                    alt={product.productName}
-                    className="w-80 h-80 object-cover rounded-2xl shadow-lg border-4 border-purple-100"
-                    style={{ maxWidth: '100%', maxHeight: '320px' }}
-                    onError={e => { e.target.onerror = null; e.target.src = 'https://via.placeholder.com/500x500?text=No+Image'; }}
-                  />
+                  <a href={`/product/${product._id}`} style={{ display: 'block', width: '100%' }}>
+                    <img
+                      src={product.productImageUrl && product.productImageUrl !== 'undefined' && product.productImageUrl !== ''
+                        ? `http://localhost:3000/${product.productImageUrl}`
+                        : 'https://via.placeholder.com/500x500?text=No+Image'}
+                      alt={product.productName}
+                      className="w-80 h-80 object-cover rounded-2xl shadow-lg border-4 border-purple-100 hover:scale-105 transition-transform duration-200"
+                      style={{ maxWidth: '100%', maxHeight: '320px' }}
+                      onError={e => { e.target.onerror = null; e.target.src = 'https://via.placeholder.com/500x500?text=No+Image'; }}
+                    />
+                  </a>
                 </div>
                 <div className="w-full flex flex-col justify-between px-8 pb-8 pt-4">
                   <h3 className="text-2xl font-bold text-purple-700 mb-2 tracking-tight text-left">{product.productName}</h3>
