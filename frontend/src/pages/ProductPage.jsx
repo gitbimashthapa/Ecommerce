@@ -5,6 +5,36 @@ import Navbar from '../components/Navbar';
 import { toast } from 'react-hot-toast';
 
 const ProductPage = () => {
+  // Wishlist logic (copied from Home.jsx for consistency)
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    setIsLoggedIn(!!token);
+  }, []);
+
+  const addToWishlist = async (productId) => {
+    if (!isLoggedIn) {
+      toast.error('Please login to add items to wishlist');
+      return;
+    }
+    try {
+      const token = localStorage.getItem('token');
+      await axios.post(
+        'http://localhost:3000/api/wishlist/',
+        { productId },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+      toast.success('Product added to wishlist successfully!');
+    } catch (err) {
+      console.error('Error adding to wishlist:', err);
+      const errorMessage = err.response?.data?.message || 'Failed to add product to wishlist';
+      toast.error(errorMessage);
+    }
+  };
   // Cart logic (copied from Home.jsx for consistency)
   const [cart, setCart] = useState([]);
   useEffect(() => {
@@ -94,7 +124,13 @@ const ProductPage = () => {
               >
                 Add to Cart
               </button>
-              <button className="flex-1 bg-white border-2 border-purple-400 text-purple-700 py-3 rounded-xl font-bold shadow hover:bg-purple-50 transition">Buy Now</button>
+              <button
+                className="flex-1 bg-white border-2 border-red-400 text-red-500 py-3 rounded-xl font-bold shadow hover:bg-red-50 transition flex items-center justify-center"
+                title="Add to Wishlist"
+                onClick={() => addToWishlist(product._id)}
+              >
+                <i className="fas fa-heart text-2xl"></i>
+              </button>
             </div>
           </div>
         </div>

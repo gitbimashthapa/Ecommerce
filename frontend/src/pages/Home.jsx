@@ -18,7 +18,6 @@ const Home = () => {
   useEffect(() => {
     if (products && products.length > 0) {
       console.log('Homepage products:', products.map(p => ({
-        id: p._id,
         name: p.productName,
         imageUrl: p.productImageUrl
       })));
@@ -224,22 +223,22 @@ const Home = () => {
       )}
       
       {/* Featured Products Section */}
-      <div className="featured-section px-5 py-16 text-center">
-        <div className="section-header flex justify-between items-center mb-10 animate-fadeInUp">
-          <h2 className="text-3xl font-bold">FEATURED PRODUCTS</h2>
-          <span className="text-red-500 font-medium">{products.length} Products Available</span>
+      <div className="featured-section px-5 py-16 text-center bg-gradient-to-br from-gray-50 via-white to-purple-100">
+        <div className="section-header flex flex-col md:flex-row justify-between items-center mb-10 animate-fadeInUp">
+          <h2 className="text-4xl font-extrabold text-purple-700 mb-4 md:mb-0 tracking-tight">Featured Products</h2>
+          <span className="text-lg text-purple-500 font-semibold bg-purple-100 px-4 py-2 rounded-full shadow">{products.length} Products Available</span>
         </div>
-        
+
         {loading ? (
           <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-red-500"></div>
+            <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-purple-400"></div>
           </div>
         ) : error ? (
           <div className="text-center py-16">
-            <p className="text-red-500 text-lg">{error}</p>
+            <p className="text-purple-500 text-lg">{error}</p>
             <button
               onClick={fetchProducts}
-              className="mt-4 bg-red-500 text-white px-6 py-2 rounded-lg hover:bg-red-600 transition-colors"
+              className="mt-4 bg-purple-500 text-white px-6 py-2 rounded-lg hover:bg-purple-600 transition-colors"
             >
               Retry
             </button>
@@ -249,66 +248,51 @@ const Home = () => {
             <p className="text-gray-500 text-lg">No products found for your search/filter.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-12">
             {filteredProducts.map((product) => (
-              <a key={product._id} href={`/product/${product._id}`} className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 animate-fadeInUp block">
-                <div className="relative overflow-hidden group">
+              <div
+                key={product._id}
+                className="bg-white rounded-3xl shadow-xl hover:shadow-2xl transition-shadow duration-300 overflow-hidden flex flex-col items-center mb-12 animate-fadeInUp transform hover:scale-105 border border-gray-100"
+                style={{ minHeight: '420px' }}
+              >
+                <div className="w-full flex items-center justify-center bg-gradient-to-tr from-purple-100 to-blue-50 p-8" style={{ minHeight: '320px' }}>
                   <img
-                      src={product.productImageUrl && product.productImageUrl !== 'undefined' && product.productImageUrl !== ''
-                        ? `http://localhost:3000/${product.productImageUrl}`
-                        : 'https://via.placeholder.com/300x300?text=No+Image'}
-                      alt={product.productName}
-                      className="w-full h-64 object-cover"
-                      loading="lazy"
-                      onError={e => {
-                        console.error('Image failed to load:', {
-                          src: e.target.src,
-                          productImageUrl: product.productImageUrl,
-                          productId: product._id,
-                          productName: product.productName
-                        });
-                        e.target.onerror = null;
-                        e.target.src = 'https://via.placeholder.com/300x300?text=No+Image';
-                      }}
+                    src={product.productImageUrl && product.productImageUrl !== 'undefined' && product.productImageUrl !== ''
+                      ? `http://localhost:3000/${product.productImageUrl}`
+                      : 'https://via.placeholder.com/500x500?text=No+Image'}
+                    alt={product.productName}
+                    className="w-80 h-80 object-cover rounded-2xl shadow-lg border-4 border-purple-100"
+                    style={{ maxWidth: '100%', maxHeight: '320px' }}
+                    onError={e => { e.target.onerror = null; e.target.src = 'https://via.placeholder.com/500x500?text=No+Image'; }}
                   />
-                  <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300"></div>
-                  <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 flex gap-2">
+                </div>
+                <div className="w-full flex flex-col justify-between px-8 pb-8 pt-4">
+                  <h3 className="text-2xl font-bold text-purple-700 mb-2 tracking-tight text-left">{product.productName}</h3>
+                  <p className="text-gray-600 text-base mb-4 italic line-clamp-2 text-left">{product.productDescription}</p>
+                  <div className="flex flex-wrap gap-3 mb-4 items-center justify-center">
+                    <span className="bg-blue-50 text-blue-700 px-3 py-1 rounded-full font-semibold text-xs">Category: {product.category}</span>
+                    <span className="bg-green-50 text-green-700 px-3 py-1 rounded-full font-semibold text-xs">Stock: {product.productTotalStockQuantity}</span>
+                    <span className="bg-yellow-50 text-yellow-700 px-3 py-1 rounded-full font-semibold text-xs flex items-center">Rating: {product.totalRating || 'N/A'} / 5</span>
+                  </div>
+                  <div className="flex items-center justify-center mb-6 gap-6">
+                    <span className="text-2xl font-bold text-purple-600 text-center flex items-center justify-center">${product.productPrice}</span>
                     <button
-                      onClick={e => { e.preventDefault(); addToCart(product); }}
-                      className="bg-red-500 text-white px-4 py-2 rounded-full hover:bg-red-600 transition-colors text-sm"
+                      className="bg-gradient-to-r from-purple-500 to-blue-500 text-white px-5 py-2 rounded-xl font-bold shadow-lg hover:from-purple-600 hover:to-blue-600 transition flex items-center justify-center"
+                      onClick={() => addToCart(product)}
+                      title="Add to Cart"
                     >
-                      Add to Cart
+                      <i className="fas fa-shopping-cart text-xl"></i>
                     </button>
                     <button
-                      onClick={e => { e.preventDefault(); addToWishlist(product._id); }}
-                      className="bg-gray-500 text-white px-4 py-2 rounded-full hover:bg-gray-600 transition-colors text-sm"
+                      className="bg-white border-2 border-purple-400 text-purple-500 px-5 py-2 rounded-xl font-bold shadow hover:bg-purple-50 transition flex items-center justify-center"
+                      title="Add to Wishlist"
+                      onClick={() => addToWishlist(product._id)}
                     >
-                      <i className="fas fa-heart"></i>
+                      <i className="fas fa-heart text-xl"></i>
                     </button>
                   </div>
                 </div>
-                <div className="p-4">
-                  <h3 className="font-semibold text-lg mb-2">{product.productName}</h3>
-                  <p className="text-gray-600 text-sm mb-2 line-clamp-2">{product.productDescription}</p>
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-sm text-gray-500">Category: {product.category}</span>
-                  </div>
-                  {product.totalRating && (
-                    <div className="flex justify-center items-center mb-2">
-                      <div className="flex text-yellow-400">
-                        {[...Array(5)].map((_, i) => (
-                          <i
-                            key={i}
-                            className={`fas fa-star ${i < Math.floor(product.totalRating) ? '' : 'text-gray-300'}`}
-                          ></i>
-                        ))}
-                      </div>
-                      <span className="text-gray-500 text-sm ml-2">({product.totalRating})</span>
-                    </div>
-                  )}
-                  <p className="text-red-500 font-bold text-xl">${product.productPrice}</p>
-                </div>
-              </a>
+              </div>
             ))}
           </div>
         )}
@@ -382,6 +366,6 @@ const Home = () => {
       </footer>
     </>
   );
-};
+}
 
 export default Home;
